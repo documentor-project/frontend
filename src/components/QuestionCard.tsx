@@ -37,17 +37,17 @@ export default function QuestionCard({
     <Card className={className}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
         {/* 질문 제목 */}
-        <p
+        <h3
           style={{
             fontSize: 'var(--font-size-lg)',
             fontWeight: 600,
             color: 'var(--color-primary)',
             lineHeight: 1.5,
+            margin: 0,
           }}
         >
-          <span style={{ marginRight: 'var(--spacing-xs)' }}>{index}.</span>
-          {question}
-        </p>
+          {index}. {question}
+        </h3>
 
         {/* 뱃지 */}
         <div style={{ display: 'flex', gap: 'var(--spacing-xs)', flexWrap: 'wrap' }}>
@@ -57,59 +57,59 @@ export default function QuestionCard({
 
         {/* 꼬리질문 토글 */}
         {followUpQuestions.length > 0 && (
-          <div>
-            <button
-              onClick={() => setIsFollowUpOpen((prev) => !prev)}
+          <button
+            onClick={() => setIsFollowUpOpen((prev) => !prev)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 'var(--spacing-xs)',
+              alignSelf: 'flex-start',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              fontSize: 'var(--font-size-sm)',
+              fontWeight: 500,
+              color: 'var(--color-primary)',
+              cursor: 'pointer',
+            }}
+          >
+            꼬리질문 ({followUpQuestions.length})
+            <span
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 'var(--spacing-xs)',
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                fontSize: 'var(--font-size-sm)',
-                fontWeight: 500,
-                color: 'var(--color-primary)',
-                cursor: 'pointer',
+                display: 'inline-block',
+                transition: 'transform var(--transition-base)',
+                transform: isFollowUpOpen ? 'rotate(180deg)' : 'rotate(0deg)',
               }}
             >
-              꼬리질문 ({followUpQuestions.length})
-              <span
-                style={{
-                  display: 'inline-block',
-                  transition: 'transform var(--transition-base)',
-                  transform: isFollowUpOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                }}
-              >
-                ▾
-              </span>
-            </button>
+              ▾
+            </span>
+          </button>
+        )}
 
-            {isFollowUpOpen && (
-              <ul
+        {/* 꼬리질문 목록 */}
+        {followUpQuestions.length > 0 && isFollowUpOpen && (
+          <ul
+            style={{
+              padding: 0,
+              margin: 0,
+              listStyle: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--spacing-xs)',
+            }}
+          >
+            {followUpQuestions.map((fq, i) => (
+              <li
+                key={i}
                 style={{
-                  marginTop: 'var(--spacing-sm)',
-                  paddingLeft: 'var(--spacing-md)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 'var(--spacing-xs)',
+                  fontSize: 'var(--font-size-sm)',
+                  color: 'var(--color-text-muted)',
                 }}
               >
-                {followUpQuestions.map((fq, i) => (
-                  <li
-                    key={i}
-                    style={{
-                      fontSize: 'var(--font-size-sm)',
-                      color: 'var(--color-text-muted)',
-                      listStyleType: 'disc',
-                    }}
-                  >
-                    {fq}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+                {fq}
+              </li>
+            ))}
+          </ul>
         )}
 
         {/* 출처 파일 */}
