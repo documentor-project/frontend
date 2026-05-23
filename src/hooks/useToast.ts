@@ -1,4 +1,4 @@
-import { useToastCtx } from '@/components/Toast';
+import { useToastCtx } from '@/components/Toast/context';
 
 const useToast = () => {
   const { show } = useToastCtx();

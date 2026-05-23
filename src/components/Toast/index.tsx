@@ -1,13 +1,6 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { ToastContext } from './context';
 
 // ---- Types ----
 
@@ -20,26 +13,12 @@ type ToastItem = {
   duration: number;
 };
 
-type ToastContextType = {
-  show: (message: string, variant?: ToastVariant, duration?: number) => void;
-};
-
-// ---- Context ----
-
-const ToastContext = createContext<ToastContextType | null>(null);
-
-export const useToastCtx = () => {
-  const ctx = useContext(ToastContext);
-  if (!ctx) throw new Error('useToast은 ToastProvider 내부에서 사용해야 합니다.');
-  return ctx;
-};
-
 // ---- Constants ----
 
 const VARIANT_STYLES: Record<ToastVariant, { border: string; icon: string }> = {
   success: { border: '#059669', icon: '#059669' },
-  error:   { border: '#ef4444', icon: '#ef4444' },
-  info:    { border: '#5b4ee8', icon: '#5b4ee8' },
+  error: { border: '#ef4444', icon: '#ef4444' },
+  info: { border: '#5b4ee8', icon: '#5b4ee8' },
   warning: { border: '#f59e0b', icon: '#f59e0b' },
 };
 
@@ -142,14 +121,26 @@ function ToastItemComponent({ item, onRemove }: ToastItemProps) {
       >
         {ICON_PATHS[item.variant]}
       </svg>
-      <p className="flex-1 text-[var(--font-size-sm)] leading-snug text-[var(--color-text)]">{item.message}</p>
+      <p className="flex-1 text-[var(--font-size-sm)] leading-snug text-[var(--color-text)]">
+        {item.message}
+      </p>
       <button
         type="button"
         onClick={dismiss}
         aria-label="알림 닫기"
         className="shrink-0 text-[var(--color-text-muted)] opacity-60 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] rounded"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
           <path d="M18 6 6 18M6 6l12 12" />
         </svg>
       </button>
@@ -166,10 +157,13 @@ type ToastProviderProps = {
 function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
-  const show = useCallback((message: string, variant: ToastVariant = 'info', duration = DEFAULT_DURATION) => {
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    setToasts((prev) => [...prev, { id, message, variant, duration }]);
-  }, []);
+  const show = useCallback(
+    (message: string, variant: ToastVariant = 'info', duration = DEFAULT_DURATION) => {
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      setToasts((prev) => [...prev, { id, message, variant, duration }]);
+    },
+    [],
+  );
 
   const remove = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
