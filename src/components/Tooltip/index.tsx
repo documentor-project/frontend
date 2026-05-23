@@ -55,12 +55,6 @@ const PLACEMENT_CLASSES: Record<TooltipPlacement, string> = {
   right: 'left-full top-1/2 -translate-y-1/2 ml-2',
 };
 
-const ARROW_CLASSES: Record<TooltipPlacement, string> = {
-  top: 'top-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent',
-  bottom: 'bottom-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent',
-  left: 'left-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent',
-  right: 'right-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent',
-};
 
 // ---- Root ----
 
@@ -132,24 +126,16 @@ function Content({ children, className = '' }: ContentProps) {
         className,
       ].join(' ')}
     >
-      {/* Arrow */}
-      <span
-        aria-hidden="true"
-        style={{ borderColor: 'var(--color-primary)' }}
-        className={[
-          'absolute border-[6px]',
-          ARROW_CLASSES[placement],
-        ].join(' ')}
-      />
       {/* Bubble */}
       <div
         style={{
-          backgroundColor: 'var(--color-primary)',
-          borderRadius: 'var(--radius-md)',
+          backgroundColor: '#5b4ee8',
+          borderRadius: 'var(--radius-lg)',
           fontSize: 'var(--font-size-sm)',
           boxShadow: 'var(--shadow-md)',
+          color: '#ffffff',
         }}
-        className="px-3 py-2 text-white leading-snug whitespace-nowrap"
+        className="px-4 py-2 leading-snug whitespace-nowrap"
       >
         {children}
       </div>
