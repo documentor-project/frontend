@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useRef, useState, type ReactNode } from 'react';
 
 // ---- Types ----
 
@@ -55,7 +48,6 @@ const PLACEMENT_CLASSES: Record<TooltipPlacement, string> = {
   right: 'left-full top-1/2 -translate-y-1/2 ml-2',
 };
 
-
 // ---- Root ----
 
 let idCounter = 0;
@@ -67,9 +59,7 @@ function TooltipRoot({ children, placement = 'top' }: TooltipProps) {
 
   return (
     <TooltipContext.Provider value={{ open, setOpen, triggerRef, placement, tooltipId }}>
-      <div className="relative inline-block">
-        {children}
-      </div>
+      <div className="relative inline-block">{children}</div>
     </TooltipContext.Provider>
   );
 }
@@ -98,31 +88,17 @@ function Trigger({ children, className = '' }: TriggerProps) {
 
 function Content({ children, className = '' }: ContentProps) {
   const { open, placement, tooltipId } = useTooltipCtx();
-  const [visible, setVisible] = useState(false);
-  const rafRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (open) {
-      rafRef.current = requestAnimationFrame(() => setVisible(true));
-    } else {
-      setVisible(false);
-    }
-    return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-    };
-  }, [open]);
-
-  if (!open && !visible) return null;
 
   return (
     <div
       id={tooltipId}
       role="tooltip"
+      style={{ pointerEvents: open ? 'auto' : 'none' }}
       className={[
         'absolute z-50 w-max max-w-xs',
         PLACEMENT_CLASSES[placement],
         'transition-all duration-200',
-        visible && open ? 'opacity-100 scale-100' : 'opacity-0 scale-95',
+        open ? 'opacity-100 scale-100' : 'opacity-0 scale-95',
         className,
       ].join(' ')}
     >
