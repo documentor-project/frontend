@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { ToastContext } from './context';
+import { ToastContext } from '@/contexts/ToastContext';
 
 // ---- Types ----
 
