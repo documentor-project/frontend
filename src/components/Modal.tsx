@@ -64,7 +64,7 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }: Props)
         {/* 헤더 */}
         {title && (
           <div className="flex items-center justify-between px-8 pt-7 pb-5 border-b border-[var(--color-border)]">
-            <h2 id="modal-title" className="text-[20px] font-bold text-[#111827]">
+            <h2 id="modal-title" className="text-[20px] font-bold text-[var(--color-text)]">
               {title}
             </h2>
             <button
@@ -91,7 +91,9 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }: Props)
         )}
 
         {/* 본문 */}
-        <div className="px-8 py-6 text-[14px] text-[#374151] leading-relaxed">{children}</div>
+        <div className="px-8 py-6 text-[15px] text-[var(--color-text)] leading-relaxed">
+          {children}
+        </div>
 
         {/* 푸터 */}
         {footer && (
