@@ -63,5 +63,34 @@ jobs:
       - name: Deploy to S3
         run: aws s3 sync dist/ s3://${{ secrets.AWS_S3_BUCKET }} --delete
 
+      - name: Configure CloudFront for SPA
+        run: |
+          RESULT=$(aws cloudfront get-distribution-config --id ${{ secrets.AWS_CLOUDFRONT_ID }})
+          ETAG=$(echo "$RESULT" | jq -r '.ETag')
+          UPDATED=$(echo "$RESULT" | jq '.DistributionConfig |
+            .DefaultRootObject = "index.html" |
+            .CustomErrorResponses = {
+              "Quantity": 2,
+              "Items": [
+                {
+                  "ErrorCode": 403,
+                  "ResponsePagePath": "/index.html",
+                  "ResponseCode": "200",
+                  "ErrorCachingMinTTL": 300
+                },
+                {
+                  "ErrorCode": 404,
+                  "ResponsePagePath": "/index.html",
+                  "ResponseCode": "200",
+                  "ErrorCachingMinTTL": 300
+                }
+              ]
+            }
+          ')
+          aws cloudfront update-distribution \
+            --id ${{ secrets.AWS_CLOUDFRONT_ID }} \
+            --distribution-config "$UPDATED" \
+            --if-match "$ETAG"
+
       - name: Invalidate CloudFront Cache
         run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_ID }} --paths "/*"
