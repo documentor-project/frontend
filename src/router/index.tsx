@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import LoginPage from '@/pages/Login';
 import RegisterPage from '@/pages/Register';
 import ProfilePage from '@/pages/Profile';
@@ -9,6 +9,10 @@ import NotificationSettingsPage from '@/pages/NotificationSettings';
 import { ROUTES } from '@/constants/routes';
 
 const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Navigate to={ROUTES.LOGIN} replace />,
+  },
   {
     path: ROUTES.LOGIN,
     element: <LoginPage />,
