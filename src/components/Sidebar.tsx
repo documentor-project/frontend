@@ -20,7 +20,11 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { label: '문서 업로드', path: ROUTES.DOCUMENT_UPLOAD, icon: <PiUploadSimple size={18} /> },
-  { label: '질문 생성 설정', path: ROUTES.QUESTION_SETTINGS, icon: <PiSlidersHorizontal size={18} /> },
+  {
+    label: '질문 생성 설정',
+    path: ROUTES.QUESTION_SETTINGS,
+    icon: <PiSlidersHorizontal size={18} />,
+  },
   { label: '질문 리스트', path: ROUTES.QUESTION_LIST, icon: <PiListChecks size={18} /> },
   { label: '알림 설정', path: ROUTES.NOTIFICATION_SETTINGS, icon: <PiBell size={18} /> },
 ];
