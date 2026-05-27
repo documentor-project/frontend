@@ -6,16 +6,7 @@ import DocumentUploadPage from '@/pages/DocumentUpload';
 import QuestionSettingsPage from '@/pages/QuestionSettings';
 import QuestionListPage from '@/pages/QuestionList';
 import NotificationSettingsPage from '@/pages/NotificationSettings';
-
-export const ROUTES = {
-  LOGIN: '/login',
-  REGISTER: '/register',
-  PROFILE: '/profile',
-  DOCUMENT_UPLOAD: '/documents/upload',
-  QUESTION_SETTINGS: '/questions/settings',
-  QUESTION_LIST: '/questions',
-  NOTIFICATION_SETTINGS: '/notifications/settings',
-} as const;
+import { ROUTES } from '@/constants/routes';
 
 const router = createBrowserRouter([
   {

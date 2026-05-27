@@ -10,7 +10,7 @@ import {
   PiList,
 } from 'react-icons/pi';
 import Logo from '@/components/Logo';
-import { ROUTES } from '@/router';
+import { ROUTES } from '@/constants/routes';
 
 type NavItem = {
   label: string;
