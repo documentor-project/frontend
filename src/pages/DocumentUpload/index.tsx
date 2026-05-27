@@ -9,25 +9,19 @@ import { ACCEPTED_EXTENSIONS, DOCUMENT_CATEGORIES, type DocumentCategory } from 
 
 // ---- Stepper ----
 
-type StepStatus = 'active' | 'pending' | 'done';
+const STEP_LABELS = ['문서 업로드', '분석 중', '완료'];
 
-type Step = { label: string; status: StepStatus };
+type StepperProps = { currentStep: number };
 
-const STEPS: Step[] = [
-  { label: '문서 업로드', status: 'active' },
-  { label: '분석 중', status: 'pending' },
-  { label: '완료', status: 'pending' },
-];
-
-const Stepper = () => (
+const Stepper = ({ currentStep }: StepperProps) => (
   <div className="flex items-center gap-2 mb-8">
-    {STEPS.map((step, i) => (
-      <div key={step.label} className="flex items-center gap-2">
+    {STEP_LABELS.map((label, i) => (
+      <div key={label} className="flex items-center gap-2">
         <div className="flex items-center gap-2">
           <div
             className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0"
             style={
-              step.status === 'active'
+              i === currentStep
                 ? { backgroundColor: 'var(--color-primary)', color: 'var(--color-white)' }
                 : { backgroundColor: 'var(--color-gray-200)', color: 'var(--color-gray-500)' }
             }
@@ -37,13 +31,13 @@ const Stepper = () => (
           <span
             className="text-sm font-medium"
             style={{
-              color: step.status === 'active' ? 'var(--color-text)' : 'var(--color-gray-400)',
+              color: i === currentStep ? 'var(--color-text)' : 'var(--color-gray-400)',
             }}
           >
-            {step.label}
+            {label}
           </span>
         </div>
-        {i < STEPS.length - 1 && (
+        {i < STEP_LABELS.length - 1 && (
           <span style={{ color: 'var(--color-gray-300)', margin: '0 4px' }}>→</span>
         )}
       </div>
@@ -154,7 +148,7 @@ const Dropzone = ({ file, onChange }: DropzoneProps) => {
 // ---- Page ----
 
 const DocumentUploadPage = () => {
-  const { mutate: uploadMutate, isPending } = useUploadDocument();
+  const { mutate: uploadMutate, isPending, isSuccess } = useUploadDocument();
 
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
@@ -162,6 +156,7 @@ const DocumentUploadPage = () => {
   const [error, setError] = useState('');
 
   const isValid = file !== null && title.trim() !== '' && category !== '';
+  const currentStep = isSuccess ? 2 : isPending ? 1 : 0;
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -192,7 +187,7 @@ const DocumentUploadPage = () => {
         문서 업로드
       </h1>
 
-      <Stepper />
+      <Stepper currentStep={currentStep} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
         <Dropzone file={file} onChange={setFile} />
@@ -211,7 +206,7 @@ const DocumentUploadPage = () => {
             카테고리
           </label>
           <Select value={category} onChange={setCategory}>
-            <Select.Trigger placeholder="카테고리를 선택하세요" />
+            <Select.Trigger placeholder="카테고리를 선택하세요" className="h-[52px]" />
             <Select.Content>
               {DOCUMENT_CATEGORIES.map((cat) => (
                 <Select.Item key={cat.value} value={cat.value}>
