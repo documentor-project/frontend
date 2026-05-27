@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import LoginPage from '@/pages/Login';
 import RegisterPage from '@/pages/Register';
 import ProfilePage from '@/pages/Profile';
@@ -18,6 +18,10 @@ export const ROUTES = {
 } as const;
 
 const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Navigate to={ROUTES.LOGIN} replace />,
+  },
   {
     path: ROUTES.LOGIN,
     element: <LoginPage />,
