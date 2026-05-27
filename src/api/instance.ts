@@ -65,10 +65,9 @@ instance.interceptors.response.use(
       }
 
       try {
-        const { data } = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}/api/auth/refresh`,
-          { refreshToken: storedRefreshToken },
-        );
+        const { data } = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/refresh`, {
+          refreshToken: storedRefreshToken,
+        });
         localStorage.setItem(ACCESS_TOKEN_KEY, data.accessToken);
         localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
         instance.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;
