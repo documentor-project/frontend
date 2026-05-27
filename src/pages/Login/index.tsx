@@ -88,7 +88,10 @@ const LoginPage = () => {
           />
 
           {errors.general && (
-            <p className="text-center" style={{ fontSize: 'var(--font-size-sm)', color: '#EF4444' }}>
+            <p
+              className="text-center"
+              style={{ fontSize: 'var(--font-size-sm)', color: '#EF4444' }}
+            >
               {errors.general}
             </p>
           )}
@@ -112,19 +115,17 @@ const LoginPage = () => {
           <div className="flex-1 h-px" style={{ backgroundColor: 'var(--color-border)' }} />
         </div>
 
-        <Button
-          type="button"
-          variant="kakao"
-          fullWidth
-          onClick={kakaoLogin}
-          style={{ height: 52 }}
-        >
+        <Button type="button" variant="kakao" fullWidth onClick={kakaoLogin} style={{ height: 52 }}>
           카카오로 시작하기
         </Button>
 
         <p
           className="text-center"
-          style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', marginTop: 28 }}
+          style={{
+            fontSize: 'var(--font-size-sm)',
+            color: 'var(--color-text-muted)',
+            marginTop: 28,
+          }}
         >
           계정이 없으신가요?{' '}
           <Link to={ROUTES.REGISTER} style={{ color: 'var(--color-primary)', fontWeight: 600 }}>

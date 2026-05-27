@@ -122,7 +122,10 @@ const RegisterPage = () => {
           />
 
           {errors.general && (
-            <p className="text-center" style={{ fontSize: 'var(--font-size-sm)', color: '#EF4444' }}>
+            <p
+              className="text-center"
+              style={{ fontSize: 'var(--font-size-sm)', color: '#EF4444' }}
+            >
               {errors.general}
             </p>
           )}
@@ -140,7 +143,11 @@ const RegisterPage = () => {
 
         <p
           className="text-center"
-          style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', marginTop: 28 }}
+          style={{
+            fontSize: 'var(--font-size-sm)',
+            color: 'var(--color-text-muted)',
+            marginTop: 28,
+          }}
         >
           이미 계정이 있으신가요?{' '}
           <Link to={ROUTES.LOGIN} style={{ color: 'var(--color-primary)', fontWeight: 600 }}>
