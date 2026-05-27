@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import { useRegister } from '@/hooks/useAuth';
-import { ROUTES } from '@/router';
+import { ROUTES } from '@/constants/routes';
 import Logo from '@/components/Logo';
 
 const INPUT_CLASS = '!h-[52px] shadow-[0_2px_6px_rgba(0,0,0,0.07)]';
@@ -12,12 +12,12 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const { mutate: registerMutate, isPending } = useRegister();
 
-  const [name, setName] = useState('');
+  const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [errors, setErrors] = useState<{
-    name?: string;
+    nickname?: string;
     email?: string;
     password?: string;
     passwordConfirm?: string;
@@ -26,7 +26,9 @@ const RegisterPage = () => {
 
   const validate = (): boolean => {
     const next: typeof errors = {};
-    if (!name) next.name = '이름을 입력해주세요.';
+    if (!nickname) next.nickname = '닉네임을 입력해주세요.';
+    else if (nickname.length < 2 || nickname.length > 20)
+      next.nickname = '닉네임은 2~20자 사이로 입력해주세요.';
     if (!email) next.email = '이메일을 입력해주세요.';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       next.email = '올바른 이메일 형식을 입력해주세요.';
@@ -43,7 +45,7 @@ const RegisterPage = () => {
     if (!validate()) return;
 
     registerMutate(
-      { name, email, password, passwordConfirm },
+      { email, password, nickname },
       {
         onSuccess: () => navigate(ROUTES.LOGIN),
         onError: () => setErrors({ general: '회원가입에 실패했습니다. 다시 시도해주세요.' }),
@@ -78,13 +80,13 @@ const RegisterPage = () => {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
           <Input
-            label="이름"
+            label="닉네임"
             type="text"
-            placeholder="홍길동"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            error={errors.name}
-            autoComplete="name"
+            placeholder="2~20자 닉네임을 입력해주세요"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            error={errors.nickname}
+            autoComplete="nickname"
             className={INPUT_CLASS}
           />
 

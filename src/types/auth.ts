@@ -3,18 +3,33 @@ export type LoginRequest = {
   password: string;
 };
 
-export type RegisterRequest = {
-  name: string;
-  email: string;
-  password: string;
-  passwordConfirm: string;
+export type LoginResponse = {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresIn: number;
 };
 
-export type AuthResponse = {
+export type SignUpRequest = {
+  email: string;
+  password: string;
+  nickname: string;
+};
+
+export type SignUpResponse = {
+  userId: number;
+  email: string;
+  nickname: string;
+  createdAt: string;
+};
+
+export type RefreshTokenRequest = {
+  refreshToken: string;
+};
+
+export type RefreshTokenResponse = {
   accessToken: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-  };
+  refreshToken: string;
+  tokenType: string;
+  expiresIn: number;
 };

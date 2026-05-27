@@ -4,7 +4,7 @@ import Button from '@/components/Button';
 import Input from '@/components/Input';
 import { useLogin } from '@/hooks/useAuth';
 import { kakaoLogin } from '@/api/auth';
-import { ROUTES } from '@/router';
+import { ROUTES } from '@/constants/routes';
 import Logo from '@/components/Logo';
 
 const INPUT_CLASS = '!h-[52px] shadow-[0_2px_6px_rgba(0,0,0,0.07)]';
