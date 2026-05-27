@@ -1,4 +1,5 @@
 import { useRef, useState, type DragEvent, type ChangeEvent, type SyntheticEvent } from 'react';
+import { PiUploadSimple, PiFile } from 'react-icons/pi';
 import Layout from '@/components/Layout';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
@@ -52,41 +53,6 @@ const Stepper = () => (
 
 // ---- Dropzone ----
 
-const UploadCloudIcon = () => (
-  <svg
-    width="36"
-    height="36"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    style={{ color: 'var(--color-primary)' }}
-  >
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-    <polyline points="17 8 12 3 7 8" />
-    <line x1="12" y1="3" x2="12" y2="15" />
-  </svg>
-);
-
-const FileIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    style={{ color: 'var(--color-primary)' }}
-  >
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-  </svg>
-);
-
 type DropzoneProps = {
   file: File | null;
   onChange: (file: File | null) => void;
@@ -130,7 +96,7 @@ const Dropzone = ({ file, onChange }: DropzoneProps) => {
             className="w-12 h-12 rounded-full flex items-center justify-center"
             style={{ backgroundColor: 'var(--color-primary-light)' }}
           >
-            <FileIcon />
+            <PiFile size={20} style={{ color: 'var(--color-primary)' }} />
           </div>
           <p className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>
             {file.name}
@@ -158,7 +124,7 @@ const Dropzone = ({ file, onChange }: DropzoneProps) => {
             className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
             style={{ backgroundColor: 'var(--color-gray-100)' }}
           >
-            <UploadCloudIcon />
+            <PiUploadSimple size={36} style={{ color: 'var(--color-primary)' }} />
           </div>
           <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
             PDF, Markdown, TXT 파일을 끌어다 놓으세요
@@ -167,6 +133,7 @@ const Dropzone = ({ file, onChange }: DropzoneProps) => {
             type="button"
             variant="outline"
             size="sm"
+            className="!self-center"
             onClick={() => inputRef.current?.click()}
           >
             파일 선택
@@ -236,7 +203,7 @@ const DocumentUploadPage = () => {
           placeholder="예: 스프링 핵심 정리"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="!h-[52px]"
+          className="!h-[52px] !rounded-[var(--radius-lg)]"
         />
 
         <div className="flex flex-col gap-2">
