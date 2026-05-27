@@ -69,6 +69,7 @@ jobs:
           ETAG=$(echo "$RESULT" | jq -r '.ETag')
           UPDATED=$(echo "$RESULT" | jq '.DistributionConfig |
             .DefaultRootObject = "index.html" |
+            .Origins.Items[0].CustomOriginConfig.OriginProtocolPolicy = "http-only" |
             .CustomErrorResponses = {
               "Quantity": 2,
               "Items": [
