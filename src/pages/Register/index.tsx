@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import { useRegister } from '@/hooks/useAuth';
-import { ROUTES } from '@/router';
+import { ROUTES } from '@/constants/routes';
 import Logo from '@/components/Logo';
 
 const INPUT_CLASS = '!h-[52px] shadow-[0_2px_6px_rgba(0,0,0,0.07)]';

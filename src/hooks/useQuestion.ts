@@ -1,8 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
-import { generateQuestions } from '@/api/question';
-import type { QuestionSettingsForm } from '@/types/question';
+import { createQuestionGeneration } from '@/api/question';
+import type { CreateQuestionGenerationRequest } from '@/types/question';
 
-export const useGenerateQuestions = () =>
+export const useGenerateQuestions = (documentId: number) =>
   useMutation({
-    mutationFn: (data: QuestionSettingsForm) => generateQuestions(data),
+    mutationFn: (body: CreateQuestionGenerationRequest) =>
+      createQuestionGeneration(documentId, body),
   });
