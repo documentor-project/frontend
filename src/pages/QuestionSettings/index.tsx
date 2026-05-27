@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PiCheck } from 'react-icons/pi';
 import Layout from '@/components/Layout';
 import Button from '@/components/Button';
+import Toggle from '@/components/Toggle';
 import { useGenerateQuestions } from '@/hooks/useQuestion';
 import {
   QUESTION_COUNTS,
@@ -11,29 +12,6 @@ import {
   type DifficultyLevel,
   type TechField,
 } from '@/types/question';
-
-// ---- Toggle ----
-
-type ToggleProps = {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-};
-
-const Toggle = ({ checked, onChange }: ToggleProps) => (
-  <button
-    type="button"
-    role="switch"
-    aria-checked={checked}
-    onClick={() => onChange(!checked)}
-    className="relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none"
-    style={{ backgroundColor: checked ? 'var(--color-primary)' : 'var(--color-gray-300)' }}
-  >
-    <span
-      className="inline-block h-5 w-5 rounded-full bg-white shadow transition-transform"
-      style={{ transform: checked ? 'translateX(22px)' : 'translateX(2px)' }}
-    />
-  </button>
-);
 
 // ---- Section ----
 
@@ -142,12 +120,7 @@ const QuestionSettingsPage = () => {
         </Section>
 
         <Section label="꼬리질문 포함">
-          <div className="flex items-center gap-3">
-            <Toggle checked={includeFollowUp} onChange={setIncludeFollowUp} />
-            <span className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>
-              {includeFollowUp ? 'ON' : 'OFF'}
-            </span>
-          </div>
+          <Toggle checked={includeFollowUp} onChange={setIncludeFollowUp} />
         </Section>
 
         <Button
