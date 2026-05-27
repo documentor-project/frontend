@@ -7,7 +7,6 @@ import QuestionSettingsPage from '@/pages/QuestionSettings';
 import QuestionListPage from '@/pages/QuestionList';
 import NotificationSettingsPage from '@/pages/NotificationSettings';
 import { ROUTES } from '@/constants/routes';
-export { ROUTES } from '@/constants/routes';
 
 const router = createBrowserRouter([
   {
