@@ -1,16 +1,20 @@
 import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { PiCheck } from 'react-icons/pi';
 import Layout from '@/components/Layout';
 import Button from '@/components/Button';
 import Toggle from '@/components/Toggle';
 import { useGenerateQuestions } from '@/hooks/useQuestion';
+import { ROUTES } from '@/constants/routes';
 import {
   QUESTION_COUNTS,
-  DIFFICULTY_LEVELS,
-  TECH_FIELDS,
+  DIFFICULTY_OPTIONS,
+  FIELD_OPTIONS,
+  QUESTION_TYPE_OPTIONS,
   type QuestionCount,
-  type DifficultyLevel,
-  type TechField,
+  type QuestionDifficulty,
+  type QuestionField,
+  type QuestionType,
 } from '@/types/question';
 
 // ---- Section ----
@@ -32,21 +36,49 @@ const Section = ({ label, children }: SectionProps) => (
 // ---- Page ----
 
 const QuestionSettingsPage = () => {
-  const { mutate, isPending } = useGenerateQuestions();
+  const { documentId } = useParams<{ documentId: string }>();
+  const navigate = useNavigate();
+  const parsedDocumentId = Number(documentId);
+
+  const { mutate, isPending } = useGenerateQuestions(parsedDocumentId);
 
   const [count, setCount] = useState<QuestionCount>(10);
-  const [difficulty, setDifficulty] = useState<DifficultyLevel>('기본');
-  const [techFields, setTechFields] = useState<TechField[]>(['CS']);
+  const [difficulty, setDifficulty] = useState<QuestionDifficulty>('BASIC');
+  const [field, setField] = useState<QuestionField>('CS');
+  const [questionTypes, setQuestionTypes] = useState<QuestionType[]>(['CONCEPT']);
   const [includeFollowUp, setIncludeFollowUp] = useState(true);
+  const [error, setError] = useState('');
 
-  const toggleTechField = (field: TechField) => {
-    setTechFields((prev) =>
-      prev.includes(field) ? prev.filter((f) => f !== field) : [...prev, field],
+  const toggleQuestionType = (type: QuestionType) => {
+    setQuestionTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
     );
   };
 
   const handleSubmit = () => {
-    mutate({ count, difficulty, techFields, includeFollowUp });
+    if (!documentId || isNaN(parsedDocumentId)) {
+      setError('문서 정보를 찾을 수 없습니다.');
+      return;
+    }
+    if (questionTypes.length === 0) {
+      setError('질문 유형을 최소 하나 선택해주세요.');
+      return;
+    }
+    setError('');
+
+    mutate(
+      {
+        questionCount: count,
+        difficulty,
+        field,
+        includeFollowUp,
+        questionTypes,
+      },
+      {
+        onSuccess: () => navigate(ROUTES.QUESTION_LIST),
+        onError: () => setError('질문 생성에 실패했습니다. 다시 시도해주세요.'),
+      },
+    );
   };
 
   return (
@@ -74,15 +106,15 @@ const QuestionSettingsPage = () => {
 
         <Section label="난이도">
           <div className="flex gap-2">
-            {DIFFICULTY_LEVELS.map((d) => (
+            {DIFFICULTY_OPTIONS.map(({ value, label }) => (
               <Button
-                key={d}
+                key={value}
                 type="button"
                 variant="chip"
-                selected={difficulty === d}
-                onClick={() => setDifficulty(d)}
+                selected={difficulty === value}
+                onClick={() => setDifficulty(value)}
               >
-                {d}
+                {label}
               </Button>
             ))}
           </div>
@@ -90,13 +122,29 @@ const QuestionSettingsPage = () => {
 
         <Section label="기술 분야">
           <div className="flex flex-wrap gap-2">
-            {TECH_FIELDS.map((field) => {
-              const isSelected = techFields.includes(field);
+            {FIELD_OPTIONS.map(({ value, label }) => (
+              <Button
+                key={value}
+                type="button"
+                variant="chip"
+                selected={field === value}
+                onClick={() => setField(value)}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
+        </Section>
+
+        <Section label="질문 유형">
+          <div className="flex flex-wrap gap-2">
+            {QUESTION_TYPE_OPTIONS.map(({ value, label }) => {
+              const isSelected = questionTypes.includes(value);
               return (
                 <button
-                  key={field}
+                  key={value}
                   type="button"
-                  onClick={() => toggleTechField(field)}
+                  onClick={() => toggleQuestionType(value)}
                   className="flex items-center gap-1.5 h-9 px-4 text-sm rounded-[var(--radius-md)] border transition-colors"
                   style={{
                     backgroundColor: isSelected ? 'var(--color-primary)' : 'var(--color-white)',
@@ -112,7 +160,7 @@ const QuestionSettingsPage = () => {
                       style={{ borderColor: 'var(--color-gray-300)' }}
                     />
                   )}
-                  {field}
+                  {label}
                 </button>
               );
             })}
@@ -123,11 +171,18 @@ const QuestionSettingsPage = () => {
           <Toggle checked={includeFollowUp} onChange={setIncludeFollowUp} />
         </Section>
 
+        {error && (
+          <p className="text-sm" style={{ color: '#EF4444' }}>
+            {error}
+          </p>
+        )}
+
         <Button
           type="button"
           variant="primary"
           fullWidth
           isLoading={isPending}
+          disabled={questionTypes.length === 0}
           onClick={handleSubmit}
           style={{ height: 52 }}
         >
