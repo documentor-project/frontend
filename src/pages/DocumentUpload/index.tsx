@@ -3,9 +3,8 @@ import { PiUploadSimple, PiFile } from 'react-icons/pi';
 import Layout from '@/components/Layout';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
-import Select from '@/components/Select';
 import { useUploadDocument } from '@/hooks/useDocument';
-import { ACCEPTED_EXTENSIONS, DOCUMENT_CATEGORIES, type DocumentCategory } from '@/types/document';
+import { ACCEPTED_EXTENSIONS } from '@/types/document';
 
 // ---- Stepper ----
 
@@ -152,22 +151,29 @@ const DocumentUploadPage = () => {
 
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('');
   const [error, setError] = useState('');
 
-  const isValid = file !== null && title.trim() !== '' && category !== '';
+  const isValid = file !== null && title.trim().length >= 1 && title.trim().length <= 100;
   const currentStep = isSuccess ? 2 : isPending ? 1 : 0;
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    if (!isValid) {
-      setError('파일, 문서 제목, 카테고리를 모두 입력해주세요.');
+    if (!file) {
+      setError('파일을 선택해주세요.');
+      return;
+    }
+    if (!title.trim()) {
+      setError('문서 제목을 입력해주세요.');
+      return;
+    }
+    if (title.trim().length > 100) {
+      setError('문서 제목은 100자 이하로 입력해주세요.');
       return;
     }
     setError('');
 
     uploadMutate(
-      { file: file!, title: title.trim(), category: category as DocumentCategory },
+      { file, title: title.trim() },
       {
         onError: () => setError('업로드에 실패했습니다. 다시 시도해주세요.'),
       },
@@ -195,27 +201,11 @@ const DocumentUploadPage = () => {
         <Input
           label="문서 제목"
           type="text"
-          placeholder="예: 스프링 핵심 정리"
+          placeholder="예: 스프링 핵심 정리 (최대 100자)"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="!h-[52px] !rounded-[var(--radius-lg)]"
         />
-
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-            카테고리
-          </label>
-          <Select value={category} onChange={setCategory}>
-            <Select.Trigger placeholder="카테고리를 선택하세요" className="h-[52px]" />
-            <Select.Content>
-              {DOCUMENT_CATEGORIES.map((cat) => (
-                <Select.Item key={cat.value} value={cat.value}>
-                  {cat.label}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select>
-        </div>
 
         {error && (
           <p className="text-sm" style={{ color: '#EF4444' }}>
