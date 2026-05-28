@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
-import { login, register } from '@/api/auth';
-import type { LoginRequest, RegisterRequest } from '@/types/auth';
+import { login, signUp } from '@/api/auth';
+import type { LoginRequest, SignUpRequest } from '@/types/auth';
 
 export const useLogin = () =>
   useMutation({
@@ -9,5 +9,5 @@ export const useLogin = () =>
 
 export const useRegister = () =>
   useMutation({
-    mutationFn: (body: RegisterRequest) => register(body),
+    mutationFn: (body: SignUpRequest) => signUp(body),
   });
