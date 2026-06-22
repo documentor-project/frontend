@@ -1,9 +1,11 @@
 export type ProfileData = {
   nickname: string;
   email: string;
-  uploadedDocumentCount: number;
-  generatedQuestionCount: number;
-  sharedQuestionCount: number;
+  userId: number;
+  createdAt: string;
+  // uploadedDocumentCount: number;
+  // generatedQuestionCount: number;
+  // sharedQuestionCount: number;
 };
 
 export type UpdateNicknameRequest = {
@@ -12,4 +14,7 @@ export type UpdateNicknameRequest = {
 
 export type UpdateNicknameResponse = {
   nickname: string;
+  userId: number;
+  email: string;
+  updatedAt: string;
 };

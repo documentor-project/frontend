@@ -149,9 +149,10 @@ const ProfilePage = () => {
           </p>
           <div className="grid grid-cols-3 gap-4">
             {[
-              { value: profile?.uploadedDocumentCount ?? 0, label: '업로드한 문서' },
-              { value: profile?.generatedQuestionCount ?? 0, label: '생성된 질문' },
-              { value: profile?.sharedQuestionCount ?? 0, label: '공유한 질문' },
+              /*백엔드 API 준비 중*/
+              { value: '-', label: '업로드한 문서' },
+              { value: '-', label: '생성된 질문' },
+              { value: '-', label: '공유한 질문' },
             ].map(({ value, label }) => (
               <div
                 key={label}
