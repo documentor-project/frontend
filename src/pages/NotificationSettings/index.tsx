@@ -11,18 +11,15 @@ import {
   updateNotificationSettings,
   verifyEmail,
 } from '@/api/notifications';
+import { getQuestionSets } from '@/api/question';
 import { QUERY_KEYS } from '@/constants/queryKeys';
+import type { NotificationSettings } from '@/types/notification';
+import type { QuestionSetSummary } from '@/types/question';
 
 // ---- 상수 ----
 
 const MIN_COUNT = 1;
 const MAX_COUNT = 20;
-const DEFAULT_SETTINGS = {
-  email: '',
-  dailyQuestionCount: 5,
-  sendTime: '09:00',
-  enabled: true,
-};
 
 const SEND_TIME_OPTIONS = [
   { value: '06:00', label: '오전 6:00' },
@@ -40,22 +37,55 @@ const SEND_TIME_OPTIONS = [
   { value: '22:00', label: '오후 10:00' },
 ];
 
-// ---- 페이지 ----
+// ---- 페이지 (데이터 로딩 담당) ----
 
 const NotificationSettingsPage = () => {
+  const { data: settingsData } = useQuery({
+    queryKey: QUERY_KEYS.NOTIFICATION_SETTINGS,
+    queryFn: getNotificationSettings,
+  });
+
+  const { data: questionSetsData } = useQuery({
+    queryKey: QUERY_KEYS.QUESTION_SETS,
+    queryFn: getQuestionSets,
+  });
+
+  if (!settingsData || !questionSetsData) {
+    return (
+      <Layout>
+        <div className="max-w-2xl mx-auto py-20 text-center text-[var(--color-text-muted)]">
+          불러오는 중...
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <NotificationSettingsForm
+        initialData={settingsData}
+        questionSets={questionSetsData.content}
+      />
+    </Layout>
+  );
+};
+
+// ---- 폼 (입력/저장 담당) ----
+
+type FormProps = {
+  initialData: NotificationSettings;
+  questionSets: QuestionSetSummary[];
+};
+
+const NotificationSettingsForm = ({ initialData, questionSets }: FormProps) => {
   const queryClient = useQueryClient();
   const toast = useToast();
 
-  const [email, setEmail] = useState('');
-  const [count, setCount] = useState(DEFAULT_SETTINGS.dailyQuestionCount);
-  const [sendTime, setSendTime] = useState(DEFAULT_SETTINGS.sendTime);
-  const [enabled, setEnabled] = useState(DEFAULT_SETTINGS.enabled);
-
-  useQuery({
-    queryKey: QUERY_KEYS.NOTIFICATION_SETTINGS,
-    queryFn: getNotificationSettings,
-    enabled: false,
-  });
+  const [email, setEmail] = useState(initialData.email);
+  const [count, setCount] = useState(initialData.questionCount);
+  const [sendTime, setSendTime] = useState(initialData.sendTime);
+  const [enabled, setEnabled] = useState(initialData.enabled);
+  const [questionSetId, setQuestionSetId] = useState<number | undefined>(initialData.questionSetId);
 
   const saveMutation = useMutation({
     mutationFn: updateNotificationSettings,
@@ -79,7 +109,13 @@ const NotificationSettingsPage = () => {
   });
 
   const handleSave = () => {
-    saveMutation.mutate({ email, dailyQuestionCount: count, sendTime, enabled });
+    saveMutation.mutate({
+      email,
+      questionCount: count,
+      sendTime,
+      enabled,
+      questionSetId: questionSetId!,
+    });
   };
 
   const handleVerify = () => {
@@ -95,144 +131,167 @@ const NotificationSettingsPage = () => {
   };
 
   return (
-    <Layout>
-      <div className="max-w-2xl mx-auto">
-        <h1
-          className="text-[length:var(--font-size-2xl)] font-bold mb-8"
-          style={{ color: 'var(--color-text)' }}
-        >
-          알림 설정
-        </h1>
+    <div className="max-w-2xl mx-auto">
+      <h1
+        className="text-[length:var(--font-size-2xl)] font-bold mb-8"
+        style={{ color: 'var(--color-text)' }}
+      >
+        알림 설정
+      </h1>
 
-        <div className="flex flex-col gap-8">
-          {/* 이메일 주소 */}
-          <div>
-            <Input
-              label="이메일 주소"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              suffix={
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleVerify}
-                  isLoading={verifyMutation.isPending}
-                >
-                  인증하기
-                </Button>
-              }
-            />
-          </div>
+      <div className="flex flex-col gap-8">
+        {/* 이메일 주소 */}
+        <div>
+          <Input
+            label="이메일 주소"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            suffix={
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleVerify}
+                isLoading={verifyMutation.isPending}
+              >
+                인증하기
+              </Button>
+            }
+          />
+        </div>
 
-          {/* 매일 받을 질문 개수 */}
-          <div className="flex flex-col gap-[var(--spacing-sm)]">
-            <p
-              className="text-[length:var(--font-size-base)] font-semibold"
-              style={{ color: 'var(--color-text)' }}
+        {/* 매일 받을 질문 개수 */}
+        <div className="flex flex-col gap-[var(--spacing-sm)]">
+          <p
+            className="text-[length:var(--font-size-base)] font-semibold"
+            style={{ color: 'var(--color-text)' }}
+          >
+            매일 받을 질문 개수
+          </p>
+          <div className="flex items-center gap-4">
+            <div
+              className="inline-flex items-center rounded-[var(--radius-md)]"
+              style={{
+                border: '1px solid var(--color-border)',
+                backgroundColor: 'var(--color-white)',
+              }}
             >
-              매일 받을 질문 개수
-            </p>
-            <div className="flex items-center gap-4">
-              <div
-                className="inline-flex items-center rounded-[var(--radius-md)]"
+              <button
+                type="button"
+                onClick={() => handleCountChange(-1)}
+                disabled={count <= MIN_COUNT}
+                className="flex items-center justify-center w-10 h-10 text-lg font-medium transition-colors rounded-l-[var(--radius-md)]"
                 style={{
-                  border: '1px solid var(--color-border)',
-                  backgroundColor: 'var(--color-white)',
+                  color: count <= MIN_COUNT ? 'var(--color-gray-300)' : 'var(--color-text)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: count <= MIN_COUNT ? 'not-allowed' : 'pointer',
+                }}
+                aria-label="줄이기"
+              >
+                −
+              </button>
+              <span
+                className="w-10 text-center text-[length:var(--font-size-lg)] font-semibold select-none"
+                style={{
+                  color: 'var(--color-text)',
+                  borderLeft: '1px solid var(--color-border)',
+                  borderRight: '1px solid var(--color-border)',
+                  lineHeight: '40px',
                 }}
               >
-                <button
-                  type="button"
-                  onClick={() => handleCountChange(-1)}
-                  disabled={count <= MIN_COUNT}
-                  className="flex items-center justify-center w-10 h-10 text-lg font-medium transition-colors rounded-l-[var(--radius-md)]"
-                  style={{
-                    color: count <= MIN_COUNT ? 'var(--color-gray-300)' : 'var(--color-text)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: count <= MIN_COUNT ? 'not-allowed' : 'pointer',
-                  }}
-                  aria-label="줄이기"
-                >
-                  −
-                </button>
-                <span
-                  className="w-10 text-center text-[length:var(--font-size-lg)] font-semibold select-none"
-                  style={{
-                    color: 'var(--color-text)',
-                    borderLeft: '1px solid var(--color-border)',
-                    borderRight: '1px solid var(--color-border)',
-                    lineHeight: '40px',
-                  }}
-                >
-                  {count}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleCountChange(1)}
-                  disabled={count >= MAX_COUNT}
-                  className="flex items-center justify-center w-10 h-10 text-lg font-medium transition-colors rounded-r-[var(--radius-md)]"
-                  style={{
-                    color: count >= MAX_COUNT ? 'var(--color-gray-300)' : 'var(--color-text)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: count >= MAX_COUNT ? 'not-allowed' : 'pointer',
-                  }}
-                  aria-label="늘리기"
-                >
-                  +
-                </button>
-              </div>
+                {count}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleCountChange(1)}
+                disabled={count >= MAX_COUNT}
+                className="flex items-center justify-center w-10 h-10 text-lg font-medium transition-colors rounded-r-[var(--radius-md)]"
+                style={{
+                  color: count >= MAX_COUNT ? 'var(--color-gray-300)' : 'var(--color-text)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: count >= MAX_COUNT ? 'not-allowed' : 'pointer',
+                }}
+                aria-label="늘리기"
+              >
+                +
+              </button>
             </div>
           </div>
-
-          {/* 발송 시간 */}
-          <div className="flex flex-col gap-[var(--spacing-sm)]">
-            <p
-              className="text-[length:var(--font-size-base)] font-semibold"
-              style={{ color: 'var(--color-text)' }}
-            >
-              발송 시간
-            </p>
-            <div style={{ width: 200 }}>
-              <Select value={sendTime} onChange={setSendTime}>
-                <Select.Trigger />
-                <Select.Content>
-                  {SEND_TIME_OPTIONS.map((opt) => (
-                    <Select.Item key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select>
-            </div>
-          </div>
-
-          {/* 알림 활성화 */}
-          <div className="flex flex-col gap-[var(--spacing-sm)]">
-            <p
-              className="text-[length:var(--font-size-base)] font-semibold"
-              style={{ color: 'var(--color-text)' }}
-            >
-              알림 활성화
-            </p>
-            <Toggle checked={enabled} onChange={setEnabled} />
-          </div>
-
-          {/* 저장하기 */}
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            onClick={handleSave}
-            isLoading={saveMutation.isPending}
-          >
-            저장하기
-          </Button>
         </div>
+
+        {/* 발송 시간 */}
+        <div className="flex flex-col gap-[var(--spacing-sm)]">
+          <p
+            className="text-[length:var(--font-size-base)] font-semibold"
+            style={{ color: 'var(--color-text)' }}
+          >
+            발송 시간
+          </p>
+          <div style={{ width: 200 }}>
+            <Select value={sendTime} onChange={setSendTime}>
+              <Select.Trigger />
+              <Select.Content>
+                {SEND_TIME_OPTIONS.map((opt) => (
+                  <Select.Item key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select>
+          </div>
+        </div>
+
+        {/* 질문 세트 선택 */}
+        <div className="flex flex-col gap-[var(--spacing-sm)]">
+          <p
+            className="text-[length:var(--font-size-base)] font-semibold"
+            style={{ color: 'var(--color-text)' }}
+          >
+            알림 받을 질문 세트
+          </p>
+          <div style={{ width: 200 }}>
+            <Select
+              value={String(questionSetId ?? '')}
+              onChange={(v) => setQuestionSetId(Number(v))}
+            >
+              <Select.Trigger />
+              <Select.Content>
+                {questionSets.map((set) => (
+                  <Select.Item key={set.questionSetId} value={String(set.questionSetId)}>
+                    {set.title}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select>
+          </div>
+        </div>
+
+        {/* 알림 활성화 */}
+        <div className="flex flex-col gap-[var(--spacing-sm)]">
+          <p
+            className="text-[length:var(--font-size-base)] font-semibold"
+            style={{ color: 'var(--color-text)' }}
+          >
+            알림 활성화
+          </p>
+          <Toggle checked={enabled} onChange={setEnabled} />
+        </div>
+
+        {/* 저장하기 */}
+        <Button
+          variant="primary"
+          size="lg"
+          fullWidth
+          onClick={handleSave}
+          isLoading={saveMutation.isPending}
+        >
+          저장하기
+        </Button>
       </div>
-    </Layout>
+    </div>
   );
 };
 
