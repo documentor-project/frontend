@@ -17,3 +17,13 @@ export type UploadDocumentResponse = {
   status: DocumentStatus;
   createdAt: string;
 };
+
+export type DocumentDetail = {
+  documentId: number;
+  title: string;
+  fileName: string;
+  fileType: FileType;
+  status: DocumentStatus;
+  chunkCount: number;
+  createdAt: string;
+};

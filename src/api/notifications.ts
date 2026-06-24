@@ -6,14 +6,14 @@ import type {
 } from '@/types/notification';
 
 export const getNotificationSettings = async (): Promise<NotificationSettings> => {
-  const { data } = await instance.get<NotificationSettings>('/notifications/settings');
+  const { data } = await instance.get<NotificationSettings>('/api/notification-settings/me');
   return data;
 };
 
 export const updateNotificationSettings = async (
   body: UpdateNotificationSettingsRequest,
 ): Promise<NotificationSettings> => {
-  const { data } = await instance.patch<NotificationSettings>('/notifications/settings', body);
+  const { data } = await instance.put<NotificationSettings>('/api/notification-settings/me', body);
   return data;
 };
 
