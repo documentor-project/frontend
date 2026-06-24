@@ -1,5 +1,9 @@
 import instance from '@/api/instance';
-import type { UploadDocumentRequest, UploadDocumentResponse } from '@/types/document';
+import type {
+  DocumentDetail,
+  UploadDocumentRequest,
+  UploadDocumentResponse,
+} from '@/types/document';
 
 export const uploadDocument = async (
   body: UploadDocumentRequest,
@@ -11,5 +15,10 @@ export const uploadDocument = async (
   const { data } = await instance.post<UploadDocumentResponse>('/api/documents', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
+  return data;
+};
+
+export const getDocumentDetail = async (documentId: number): Promise<DocumentDetail> => {
+  const { data } = await instance.get<DocumentDetail>(`/api/documents/${documentId}`);
   return data;
 };
