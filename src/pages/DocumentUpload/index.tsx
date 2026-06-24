@@ -1,9 +1,18 @@
-import { useRef, useState, type DragEvent, type ChangeEvent, type SyntheticEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type DragEvent,
+  type ChangeEvent,
+  type SyntheticEvent,
+} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PiUploadSimple, PiFile } from 'react-icons/pi';
 import Layout from '@/components/Layout';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
-import { useUploadDocument } from '@/hooks/useDocument';
+import { useUploadDocument, useDocumentStatus } from '@/hooks/useDocument';
+import { buildQuestionSettingsPath } from '@/constants/routes';
 import { ACCEPTED_EXTENSIONS } from '@/types/document';
 
 // ---- Stepper ----
@@ -147,14 +156,29 @@ const Dropzone = ({ file, onChange }: DropzoneProps) => {
 // ---- Page ----
 
 const DocumentUploadPage = () => {
-  const { mutate: uploadMutate, isPending, isSuccess } = useUploadDocument();
+  const navigate = useNavigate();
+  const { mutate: uploadMutate, isPending } = useUploadDocument();
 
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
   const [error, setError] = useState('');
+  const [documentId, setDocumentId] = useState<number | null>(null);
+
+  // 업로드 후 문서 분석(READY) 상태를 폴링한다.
+  const { data: document } = useDocumentStatus(documentId);
+
+  // 분석이 완료되면 해당 문서의 질문 생성 설정 페이지로 이동한다.
+  useEffect(() => {
+    if (document?.status === 'READY') {
+      navigate(buildQuestionSettingsPath(document.documentId));
+    }
+  }, [document, navigate]);
 
   const isValid = file !== null && title.trim().length >= 1 && title.trim().length <= 100;
-  const currentStep = isSuccess ? 2 : isPending ? 1 : 0;
+  const isAnalyzing =
+    documentId !== null && document?.status !== 'READY' && document?.status !== 'FAILED';
+  const analysisFailed = document?.status === 'FAILED';
+  const currentStep = document?.status === 'READY' ? 2 : isPending || isAnalyzing ? 1 : 0;
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -175,6 +199,7 @@ const DocumentUploadPage = () => {
     uploadMutate(
       { file, title: title.trim() },
       {
+        onSuccess: (data) => setDocumentId(data.documentId),
         onError: () => setError('업로드에 실패했습니다. 다시 시도해주세요.'),
       },
     );
@@ -207,9 +232,9 @@ const DocumentUploadPage = () => {
           className="!h-[52px] !rounded-[var(--radius-lg)]"
         />
 
-        {error && (
+        {(error || analysisFailed) && (
           <p className="text-sm" style={{ color: '#EF4444' }}>
-            {error}
+            {error || '문서 분석에 실패했습니다. 다시 시도해주세요.'}
           </p>
         )}
 
@@ -217,8 +242,8 @@ const DocumentUploadPage = () => {
           type="submit"
           variant="primary"
           fullWidth
-          isLoading={isPending}
-          disabled={!isValid}
+          isLoading={isPending || isAnalyzing}
+          disabled={!isValid || isAnalyzing}
           style={{ height: 52 }}
         >
           업로드 및 분석 시작

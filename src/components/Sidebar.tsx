@@ -1,14 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import {
-  PiUploadSimple,
-  PiSlidersHorizontal,
-  PiListChecks,
-  PiBell,
-  PiUser,
-  PiSignOut,
-  PiList,
-} from 'react-icons/pi';
+import { PiUploadSimple, PiListChecks, PiBell, PiUser, PiSignOut, PiList } from 'react-icons/pi';
 import Logo from '@/components/Logo';
 import { ROUTES } from '@/constants/routes';
 
@@ -18,13 +10,10 @@ type NavItem = {
   icon: React.ReactNode;
 };
 
+// 질문 생성 설정은 특정 documentId가 필요한 화면이므로 정적 nav 링크에서 제외하고,
+// 문서 업로드(분석 완료) 후 해당 문서 id로 진입한다.
 const NAV_ITEMS: NavItem[] = [
   { label: '문서 업로드', path: ROUTES.DOCUMENT_UPLOAD, icon: <PiUploadSimple size={18} /> },
-  {
-    label: '질문 생성 설정',
-    path: ROUTES.QUESTION_SETTINGS,
-    icon: <PiSlidersHorizontal size={18} />,
-  },
   { label: '질문 리스트', path: ROUTES.QUESTION_LIST, icon: <PiListChecks size={18} /> },
   { label: '알림 설정', path: ROUTES.NOTIFICATION_SETTINGS, icon: <PiBell size={18} /> },
 ];
