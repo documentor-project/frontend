@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useGenerateQuestions, useQuestionGenerationStatus } from '@/hooks/useQuestion';
+import { buildQuestionListPath } from '@/constants/routes';
 import { PiCheck } from 'react-icons/pi';
 import Layout from '@/components/Layout';
 import Button from '@/components/Button';
 import Toggle from '@/components/Toggle';
-import { useGenerateQuestions } from '@/hooks/useQuestion';
-import { ROUTES } from '@/constants/routes';
 import {
   QUESTION_COUNTS,
   DIFFICULTY_OPTIONS,
@@ -39,8 +39,10 @@ const QuestionSettingsPage = () => {
   const { documentId } = useParams<{ documentId: string }>();
   const navigate = useNavigate();
   const parsedDocumentId = Number(documentId);
+  const [generationId, setGenerationId] = useState<number | null>(null);
 
   const { mutate, isPending } = useGenerateQuestions(parsedDocumentId);
+  const { data: statusData } = useQuestionGenerationStatus(generationId);
 
   const [count, setCount] = useState<QuestionCount>(10);
   const [difficulty, setDifficulty] = useState<QuestionDifficulty>('BASIC');
@@ -48,6 +50,17 @@ const QuestionSettingsPage = () => {
   const [questionTypes, setQuestionTypes] = useState<QuestionType[]>(['CONCEPT']);
   const [includeFollowUp, setIncludeFollowUp] = useState(true);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (statusData?.status === 'COMPLETED' && statusData.questionSetId) {
+      navigate(buildQuestionListPath(statusData.questionSetId));
+    }
+  }, [statusData, navigate]);
+
+  // FAILED 여부는 statusData로부터 바로 계산되는 값이라 별도 state로 옮길 필요 없음
+  const generationFailed = statusData?.status === 'FAILED';
+  const displayError =
+    error || (generationFailed ? '질문 생성에 실패했습니다. 다시 시도해주세요.' : '');
 
   const toggleQuestionType = (type: QuestionType) => {
     setQuestionTypes((prev) =>
@@ -75,11 +88,14 @@ const QuestionSettingsPage = () => {
         questionTypes,
       },
       {
-        onSuccess: () => navigate(ROUTES.QUESTION_LIST),
+        onSuccess: (res) => setGenerationId(res.generationId),
         onError: () => setError('질문 생성에 실패했습니다. 다시 시도해주세요.'),
       },
     );
   };
+
+  const isWaiting =
+    generationId !== null && statusData?.status !== 'COMPLETED' && statusData?.status !== 'FAILED';
 
   return (
     <Layout>
@@ -171,9 +187,9 @@ const QuestionSettingsPage = () => {
           <Toggle checked={includeFollowUp} onChange={setIncludeFollowUp} />
         </Section>
 
-        {error && (
+        {displayError && (
           <p className="text-sm" style={{ color: '#EF4444' }}>
-            {error}
+            {displayError}
           </p>
         )}
 
@@ -181,7 +197,7 @@ const QuestionSettingsPage = () => {
           type="button"
           variant="primary"
           fullWidth
-          isLoading={isPending}
+          isLoading={isPending || isWaiting}
           disabled={questionTypes.length === 0}
           onClick={handleSubmit}
           style={{ height: 52 }}
