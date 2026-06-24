@@ -1,21 +1,14 @@
-export type DifficultyLevel = '입문' | '기본' | '심화';
-
-export type Question = {
-  id: number;
-  question: string;
-  difficulty: DifficultyLevel;
-  techArea: string;
-  followUpQuestions: string[];
-  sourceFile: string;
+export const DIFFICULTY_LABEL: Record<QuestionDifficulty, string> = {
+  BEGINNER: '입문',
+  BASIC: '기본',
+  ADVANCED: '심화',
 };
 
-export type QuestionListResponse = {
-  total: number;
-  questions: Question[];
-};
-
-export type CreateShareLinkResponse = {
-  shareUrl: string;
+export const QUESTION_TYPE_LABEL: Record<QuestionType, string> = {
+  CONCEPT: '개념',
+  COMPARISON: '비교',
+  PRACTICAL: '실무',
+  TROUBLESHOOTING: '트러블슈팅',
 };
 
 export type QuestionDifficulty = 'BEGINNER' | 'BASIC' | 'ADVANCED';
@@ -93,4 +86,62 @@ export type QuestionSetListResponse = {
   size: number;
   totalElements: number;
   totalPages: number;
+};
+
+export type QuestionSource = {
+  documentId: number;
+  documentTitle: string;
+  page: number;
+  chunkIndex: number;
+  snippet: string;
+};
+
+export type FollowUpQuestion = {
+  followUpQuestionId: number;
+  content: string;
+};
+
+export type QuestionDetailItem = {
+  questionId: number;
+  type: QuestionType;
+  difficulty: QuestionDifficulty;
+  content: string;
+  source: QuestionSource;
+  followUps: FollowUpQuestion[];
+  createdAt: string;
+};
+
+export type QuestionSetDetail = {
+  questionSetId: number;
+  title: string;
+  documentId: number;
+  documentTitle: string;
+  difficulty: QuestionDifficulty;
+  questions: QuestionDetailItem[];
+  createdAt: string;
+};
+
+export type CreateShareLinkRequest = {
+  expiresAt: string;
+};
+
+export type CreateShareLinkResponse = {
+  shareId: number;
+  shareToken: string;
+  shareUrl: string;
+  expiresAt: string;
+  createdAt: string;
+};
+
+export type QuestionGenerationStatusResponse = {
+  generationId: number;
+  documentId: number;
+  status: GenerationStatus;
+  progress: number;
+  createdQuestionCount: number;
+  skippedQuestionCount: number;
+  skipReason: string | null;
+  questionSetId: number | null; // 완료 전엔 null
+  createdAt: string;
+  completedAt: string | null;
 };
