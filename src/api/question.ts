@@ -3,7 +3,26 @@ import type {
   CreateQuestionGenerationRequest,
   CreateQuestionGenerationResponse,
   QuestionSetListResponse,
+  QuestionSetDetail,
+  CreateShareLinkRequest,
+  CreateShareLinkResponse,
 } from '@/types/question';
+
+export const getQuestionSetDetail = async (questionSetId: number): Promise<QuestionSetDetail> => {
+  const { data } = await instance.get<QuestionSetDetail>(`/api/question-sets/${questionSetId}`);
+  return data;
+};
+
+export const createShareLink = async (
+  questionSetId: number,
+  body: CreateShareLinkRequest,
+): Promise<CreateShareLinkResponse> => {
+  const { data } = await instance.post<CreateShareLinkResponse>(
+    `/api/question-sets/${questionSetId}/share-links`,
+    body,
+  );
+  return data;
+};
 
 export const createQuestionGeneration = async (
   documentId: number,
