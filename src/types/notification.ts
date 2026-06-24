@@ -1,11 +1,20 @@
 export type NotificationSettings = {
-  email: string;
-  dailyQuestionCount: number;
-  sendTime: string;
   enabled: boolean;
+  email: string;
+  sendTime: string;
+  questionCount: number;
+  questionSetId: number;
+  questionSetTitle: string;
+  updatedAt: string;
 };
 
-export type UpdateNotificationSettingsRequest = NotificationSettings;
+export type UpdateNotificationSettingsRequest = {
+  enabled: boolean;
+  email: string;
+  sendTime: string;
+  questionCount: number;
+  questionSetId: number;
+};
 
 export type VerifyEmailRequest = {
   email: string;

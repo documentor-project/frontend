@@ -76,3 +76,21 @@ export type CreateQuestionGenerationResponse = {
   requestedQuestionCount: number;
   createdAt: string;
 };
+
+export type QuestionSetSummary = {
+  questionSetId: number;
+  title: string;
+  documentId: number;
+  documentTitle: string;
+  questionCount: number;
+  difficulty: QuestionDifficulty;
+  createdAt: string;
+};
+
+export type QuestionSetListResponse = {
+  content: QuestionSetSummary[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+};
