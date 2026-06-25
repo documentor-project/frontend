@@ -90,7 +90,7 @@ export type QuestionSetListResponse = {
 
 export type QuestionSource = {
   documentId: number;
-  documentTitle: string;
+  documentTitle?: string; // 질문 세트 상세 응답의 source에는 포함되지 않음 (세트 최상위 documentTitle 사용)
   page: number;
   chunkIndex: number;
   snippet: string;

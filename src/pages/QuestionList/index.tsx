@@ -87,7 +87,7 @@ const QuestionListPage = () => {
                 difficulty={q.difficulty}
                 type={q.type}
                 followUps={q.followUps}
-                source={q.source}
+                source={{ ...q.source, documentTitle: q.source.documentTitle ?? data.documentTitle }}
               />
             ))}
           </div>
