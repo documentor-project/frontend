@@ -3,6 +3,7 @@ export const ROUTES = {
   REGISTER: '/register',
   PROFILE: '/profile',
   DOCUMENT_UPLOAD: '/documents/upload',
+  QUESTION_SETS: '/questions',
   QUESTION_SETTINGS: '/questions/settings/:documentId',
   QUESTION_LIST: '/questions/:questionSetId',
   NOTIFICATION_SETTINGS: '/notifications/settings',

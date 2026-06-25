@@ -2,6 +2,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import {
   createQuestionGeneration,
   getQuestionSetDetail,
+  getQuestionSets,
   createShareLink,
   getQuestionGenerationStatus,
 } from '@/api/question';
@@ -12,6 +13,12 @@ export const useGenerateQuestions = (documentId: number) =>
   useMutation({
     mutationFn: (body: CreateQuestionGenerationRequest) =>
       createQuestionGeneration(documentId, body),
+  });
+
+export const useQuestionSets = () =>
+  useQuery({
+    queryKey: QUERY_KEYS.QUESTION_SETS,
+    queryFn: getQuestionSets,
   });
 
 export const useQuestionSetDetail = (questionSetId: number) =>

@@ -4,6 +4,7 @@ import RegisterPage from '@/pages/Register';
 import ProfilePage from '@/pages/Profile';
 import DocumentUploadPage from '@/pages/DocumentUpload';
 import QuestionSettingsPage from '@/pages/QuestionSettings';
+import QuestionSetsPage from '@/pages/QuestionSets';
 import QuestionListPage from '@/pages/QuestionList';
 import NotificationSettingsPage from '@/pages/NotificationSettings';
 import { ROUTES } from '@/constants/routes';
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
   {
     path: ROUTES.DOCUMENT_UPLOAD,
     element: <DocumentUploadPage />,
+  },
+  {
+    path: ROUTES.QUESTION_SETS,
+    element: <QuestionSetsPage />,
   },
   {
     path: ROUTES.QUESTION_SETTINGS,
