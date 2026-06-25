@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { PiUploadSimple, PiListChecks, PiBell, PiUser, PiSignOut, PiList } from 'react-icons/pi';
+import { PiUploadSimple, PiListChecks, PiBell, PiSignOut, PiList } from 'react-icons/pi';
 import Logo from '@/components/Logo';
 import { ROUTES } from '@/constants/routes';
+import { useLogout } from '@/hooks/useAuth';
 
 type NavItem = {
   label: string;
@@ -20,6 +21,12 @@ const NAV_ITEMS: NavItem[] = [
 
 const SidebarContent = ({ onClose }: { onClose?: () => void }) => {
   const { pathname } = useLocation();
+  const logout = useLogout();
+
+  const handleLogout = () => {
+    onClose?.();
+    logout();
+  };
 
   return (
     <div
@@ -58,16 +65,8 @@ const SidebarContent = ({ onClose }: { onClose?: () => void }) => {
         className="px-3 py-4 flex flex-col gap-1"
         style={{ borderTop: '1px solid var(--color-border)' }}
       >
-        <Link
-          to={ROUTES.PROFILE}
-          onClick={onClose}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors"
-          style={{ color: 'var(--color-text-muted)' }}
-        >
-          <PiUser size={16} />
-          Profile
-        </Link>
         <button
+          onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors w-full text-left"
           style={{ color: 'var(--color-text-muted)', background: 'none', border: 'none' }}
         >
