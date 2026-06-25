@@ -11,7 +11,7 @@ const QuestionListPage = () => {
   const parsedQuestionSetId = Number(questionSetId);
   const toast = useToast();
 
-  const { data, isLoading } = useQuestionSetDetail(parsedQuestionSetId);
+  const { data, isLoading, isError } = useQuestionSetDetail(parsedQuestionSetId);
   const shareMutation = useCreateShareLink(parsedQuestionSetId);
 
   const handleShare = () => {
@@ -28,7 +28,7 @@ const QuestionListPage = () => {
     );
   };
 
-  if (isLoading || !data) {
+  if (isLoading) {
     return (
       <Layout>
         <div
@@ -36,6 +36,19 @@ const QuestionListPage = () => {
           style={{ color: 'var(--color-text-muted)' }}
         >
           불러오는 중...
+        </div>
+      </Layout>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <Layout>
+        <div
+          className="flex items-center justify-center h-64"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
+          질문 목록을 불러오지 못했습니다.
         </div>
       </Layout>
     );
