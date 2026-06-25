@@ -6,11 +6,7 @@ import Input from '@/components/Input';
 import Select from '@/components/Select';
 import Toggle from '@/components/Toggle';
 import useToast from '@/hooks/useToast';
-import {
-  getNotificationSettings,
-  updateNotificationSettings,
-  verifyEmail,
-} from '@/api/notifications';
+import { getNotificationSettings, updateNotificationSettings } from '@/api/notifications';
 import { getQuestionSets } from '@/api/question';
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import type { NotificationSettings } from '@/types/notification';
@@ -98,16 +94,6 @@ const NotificationSettingsForm = ({ initialData, questionSets }: FormProps) => {
     },
   });
 
-  const verifyMutation = useMutation({
-    mutationFn: verifyEmail,
-    onSuccess: () => {
-      toast.success('인증 메일이 발송되었습니다.');
-    },
-    onError: () => {
-      toast.error('인증 메일 발송에 실패했습니다.');
-    },
-  });
-
   const handleSave = () => {
     saveMutation.mutate({
       email,
@@ -116,14 +102,6 @@ const NotificationSettingsForm = ({ initialData, questionSets }: FormProps) => {
       enabled,
       questionSetId: questionSetId!,
     });
-  };
-
-  const handleVerify = () => {
-    if (!email.trim()) {
-      toast.error('이메일 주소를 입력해주세요.');
-      return;
-    }
-    verifyMutation.mutate({ email });
   };
 
   const handleCountChange = (delta: number) => {
@@ -148,16 +126,6 @@ const NotificationSettingsForm = ({ initialData, questionSets }: FormProps) => {
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            suffix={
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleVerify}
-                isLoading={verifyMutation.isPending}
-              >
-                인증하기
-              </Button>
-            }
           />
         </div>
 
